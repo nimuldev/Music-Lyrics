@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Hard Rock Solution - Song Lyric App</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Custom css -->
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+ <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="navbar  navbar-dark my-3">
+            <a class="navbar-brand" href="#">
+                <img src="images/logo.png" alt="Hard Rock Solution">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavId"
+                aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
+                <img src="images/toggler-icon.svg" alt="">
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavId">
+                <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownId">
+                            <a class="dropdown-item" href="#">Action 1</a>
+                            <a class="dropdown-item" href="#">Action 2</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="content-area">
+            <div class="search-bar col-md-6 mx-auto">
+                <h1 class="text-center">Lyrics Search</h1>
+                <div class="search-box my-5">
+                    <input type="text" class="form-control" id="searchItem" placeholder="Enter your artist song name">
+                    <button class="btn btn-success search-btn" id="SearchList">Search</button>
+                </div>
+            </div>
+           
+            <div class="search-result col-md-8 mx-auto py-4" id="listSong">
+                
+            </div>
+            
+            <div class="single-lyrics text-center">
+                <button class="btn go-back">&lsaquo;</button>
+                <h2 class="text-success mb-4" id="album-title"></h2>
+              <div id="lyric">
+            
+              </div>
+            </div>
+           
+
+
+
+        </main>
+    </div>
+
+    <script>
+
+
+
+         
+        $("#SearchList").click(function () {
+
+            $("#listSong").empty();
+            $("#album-title").empty();
+            $("#lyric").empty();
+            var search = $("#searchItem").val();
+            fetch('https://api.lyrics.ovh/suggest/' + search)
+                .then(response => response.json())
+                .then(json => {
+                
+                    const data = json.data;
+                   
+                    for (let i = 0; i < data.length; i++) {
+                        const artist = data[i].artist.name;
+                        const tittle = data[i].title;
+                         
+
+                        var html = "<div class=\"single-result row align-items-center my-3 p-3\">\n" +
+                            "                    <div class=\"col-md-9\">\n" +
+                            "                        <h3 class=\"lyrics-name\">" + tittle + "</h3>\n" +
+                            "                        <p class=\"author lead\">Album by <span>" + artist + "</span></p>\n" +
+                            "                    </div>\n" +
+                            "                    <div class=\"col-md-3 text-md-right text-center\">\n" +
+                            "                        <button class=\"btn btn-success\"  onclick=\"getLyrics(`" + artist + "`,`" + tittle + "`)\">Get Lyrics</button>\n" +
+                            "                    </div>\n" +
+                            "                </div>";
+
+                        $("#listSong").append(html);
+
+                    }
+
+                });
+
+
+ 
+        });
+
+        function getLyrics(artist, title) {
+
+            $("#album-title").text(title+" - "+artist);
+
+            const apiUrl = 'https://api.lyrics.ovh';
+ 
+
+            $.getJSON(apiUrl + '/v1/' + artist + '/' +title, function (data) {
+
+                $("#lyric").empty();
+                $("#lyric").append(data.lyrics.replace(/\n/g, '<br />'));
+ 
+            });
+        }
+
+    </script>
+    
+
+</body>
+
+</html>
